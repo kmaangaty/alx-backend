@@ -9,14 +9,16 @@ from typing import List, Dict
 
 def index_range(page: int, page_size: int) -> tuple:
     """
-    Calculate the start and end indexes for a given pagination.
+    Calculate the start and end indexes for
+    a given pagination.
 
     Args:
         page (int): The current page number (1-indexed).
         page_size (int): The number of items per page.
 
     Returns:
-        tuple: A tuple containing the start index and the end index.
+        tuple: A tuple containing the start
+        index and the end index.
     """
     start = (page - 1) * page_size
     end = start + page_size
@@ -25,20 +27,23 @@ def index_range(page: int, page_size: int) -> tuple:
 
 class Server:
     """
-    Server class to paginate a database of popular baby names.
+    Server class to paginate a database
+    of popular baby names.
     """
     DATA_FILE = "Popular_Baby_Names.csv"
 
     def __init__(self):
         """
-        Initialize the Server instance with dataset and indexed dataset as None.
+        Initialize the Server instance with dataset
+         and indexed dataset as None.
         """
         self.__dataset = None
         self.__indexed_dataset = None
 
     def dataset(self) -> List[List]:
         """
-        Load and cache the dataset from the CSV file.
+        Load and cache the dataset
+        from the CSV file.
 
         Returns:
             List[List]: The dataset loaded from the CSV file.
@@ -53,7 +58,8 @@ class Server:
 
     def indexed_dataset(self) -> Dict[int, List]:
         """
-        Create and cache an indexed version of the dataset.
+        Create and cache an indexed
+        version of the dataset.
 
         Returns:
             Dict[int, List]: The indexed dataset.
@@ -65,17 +71,24 @@ class Server:
 
     def get_hyper_index(self, index: int = None, page_size: int = 10) -> Dict:
         """
-        Retrieve a page of the dataset starting from a specific index with pagination metadata.
+        Retrieve a page of the dataset
+         starting from a specific index
+          with pagination metadata.
 
         Args:
-            index (int): The starting index of the page.
-            page_size (int): The number of items per page.
+            index (int): The starting
+             index of the page.
+            page_size (int): The number
+             of items per page.
 
         Returns:
-            Dict[str, Any]: A dictionary containing pagination metadata and the dataset page.
+            Dict[str, Any]: A dictionary containing
+             pagination metadata and the dataset page.
         """
-        assert isinstance(index, int) and index >= 0, "Index must be a non-negative integer"
-        assert isinstance(page_size, int) and page_size > 0, "Page size must be a positive integer"
+        assert isinstance(index, int) and index >= 0, \
+            "Index must be a non-negative integer"
+        assert isinstance(page_size, int) and page_size > 0,\
+            "Page size must be a positive integer"
 
         indexed_data = self.indexed_dataset()
         data = []
