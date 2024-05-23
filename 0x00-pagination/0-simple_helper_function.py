@@ -3,6 +3,7 @@
 Module for calculating index ranges for pagination.
 """
 
+
 def index_range(page: int, page_size: int) -> tuple:
     """
     Calculate the start and end index for a given page and page size.
