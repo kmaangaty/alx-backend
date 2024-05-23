@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 """ 4-mru_cache """
-
 from base_caching import BaseCaching
 
 
