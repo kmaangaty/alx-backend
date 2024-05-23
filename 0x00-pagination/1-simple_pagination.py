@@ -1,17 +1,26 @@
 #!/usr/bin/env python3
-"""Task 1: Simple pagination.
+"""
+Pagination helper functions and Server class implementation.
 """
 
 import csv
-import math
 from typing import List, Tuple
 
 
 def index_range(page: int, page_size: int) -> Tuple[int, int]:
-    """Retrieves the index range from a given page and page size.
     """
+    Calculate the start and end index for a given page and page size.
 
-    return ((page - 1) * page_size, ((page - 1) * page_size) + page_size)
+    Args:
+        page (int): The page number (1-indexed).
+        page_size (int): The number of items per page.
+
+    Returns:
+        tuple: A tuple containing the start index and end index.
+    """
+    start_index = (page - 1) * page_size
+    end_index = page * page_size
+    return start_index, end_index
 
 
 class Server:
@@ -23,23 +32,32 @@ class Server:
         self.__dataset = None
 
     def dataset(self) -> List[List]:
-        """Cached dataset
-        """
+        """Cached dataset"""
         if self.__dataset is None:
             with open(self.DATA_FILE) as f:
                 reader = csv.reader(f)
                 dataset = [row for row in reader]
             self.__dataset = dataset[1:]
-
         return self.__dataset
 
     def get_page(self, page: int = 1, page_size: int = 10) -> List[List]:
-        """Retrieves a page of data.
         """
-        assert type(page) == int and type(page_size) == int
-        assert page > 0 and page_size > 0
-        start, end = index_range(page, page_size)
-        data = self.dataset()
-        if start > len(data):
+        Retrieve a page of the dataset.
+
+        Args:
+            page (int): The page number (1-indexed).
+            page_size (int): The number of items per page.
+
+        Returns:
+            list: The list of rows from the dataset for the given page.
+        """
+        assert isinstance(page, int) and page > 0, "Page must be a positive integer"
+        assert isinstance(page_size, int) and page_size > 0, "Page size must be a positive integer"
+
+        start_index, end_index = index_range(page, page_size)
+        dataset = self.dataset()
+
+        if start_index >= len(dataset):
             return []
-        return data[start:end]
+
+        return dataset[start_index:end_index]
