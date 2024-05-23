@@ -17,8 +17,11 @@ class LFUCache(BaseCaching):
         """ Adds an item to the cache """
         if key is not None and item is not None:
             if len(self.cache_data) >= self.MAX_ITEMS:
-                least_freq_keys = [key for key, freq in self.frequency.items() if freq == min(self.frequency.values())]
-                least_recent_key = min(least_freq_keys, key=lambda x: self.cache_data[x])
+                least_freq_keys = [key for key, freq
+                                   in self.frequency.items()
+                                   if freq == min(self.frequency.values())]
+                least_recent_key = min(least_freq_keys,
+                                       key=lambda x: self.cache_data[x])
                 del self.cache_data[least_recent_key]
                 del self.frequency[least_recent_key]
                 print("DISCARD:", least_recent_key)
