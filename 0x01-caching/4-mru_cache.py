@@ -21,25 +21,19 @@ class MRUCache(BaseCaching):
         if key is None or item is None:
             return
 
-        # Check if key already exists
         if key in self.cache_data:
-            # Update item and move it to front
             self.cache_data[key] = item
             self.cache_data.move_to_end(key, last=False)
         else:
             # Add new item
             if len(self.cache_data) + 1 > BaseCaching.MAX_ITEMS:
-                # Remove the most recently used item
                 mru_key, _ = self.cache_data.popitem(last=False)
                 print("DISCARD:", mru_key)
-            # Add the new item and mark it as most recently used
             self.cache_data[key] = item
             self.cache_data.move_to_end(key, last=False)
 
     def get(self, key):
         """Retrieves an item from the cache by key."""
         if key is not None and key in self.cache_data:
-            # Move the item to front (most recently used)
             self.cache_data.move_to_end(key, last=False)
-        # Return the item if found, otherwise None
         return self.cache_data.get(key, None)
