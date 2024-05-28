@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Basic Flask app with locale detection
+Flask app with forced locale via URL parameter
 """
 
 from flask import Flask, render_template, request
-from flask_babel import Babel
+from flask_babel import Babel, _
 
 app = Flask(__name__)
 
@@ -23,13 +23,16 @@ babel = Babel(app)
 @babel.localeselector
 def get_locale() -> str:
     """Determine the best match with supported languages"""
+    locale = request.args.get('locale')
+    if locale in app.config['LANGUAGES']:
+        return locale
     return request.accept_languages.best_match(app.config['LANGUAGES'])
 
 
 @app.route('/')
 def index():
     """Route to render index.html"""
-    return render_template('2-index.html')
+    return render_template('4-index.html')
 
 
 if __name__ == "__main__":
