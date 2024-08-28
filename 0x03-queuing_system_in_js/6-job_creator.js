@@ -1,14 +1,14 @@
 #!/usr/bin/yarn dev
 import { createQueue } from 'kue';
 
-const queue = createQueue({name: 'push_notification_code'});
+const q = createQueue({name: 'push_notification_code'});
 
-const job = queue.create('push_notification_code', {
+const j = q.create('push_notification_code', {
   phoneNumber: '07045679939',
   message: 'Account registered',
 });
 
-job
+j
   .on('enqueue', () => {
     console.log('Notification job created:', job.id);
   })
@@ -18,4 +18,4 @@ job
   .on('failed attempt', () => {
     console.log('Notification job failed');
   });
-job.save();
+j.save();

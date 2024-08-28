@@ -1,7 +1,7 @@
 #!/usr/bin/yarn dev
 import { createQueue } from 'kue';
 
-const jobs = [
+const jops = [
   {
     phoneNumber: '4153518780',
     message: 'This is the code 1234 to verify your account',
@@ -50,21 +50,21 @@ const jobs = [
 
 const queue = createQueue({ name: 'push_notification_code_2' });
 
-for (const jobInfo of jobs) {
-  const job = queue.create('push_notification_code_2', jobInfo);
+for (const ji of jops) {
+  const j = queue.create('push_notification_code_2', ji);
 
-  job
+  j
     .on('enqueue', () => {
-      console.log('Notification job created:', job.id);
+      console.log('Notification job created:', j.id);
     })
     .on('complete', () => {
-      console.log('Notification job', job.id, 'completed');
+      console.log('Notification job', j.id, 'completed');
     })
     .on('failed', (err) => {
-      console.log('Notification job', job.id, 'failed:', err.message || err.toString());
+      console.log('Notification job', j.id, 'failed:', err.message || err.toString());
     })
     .on('progress', (progress, _data) => {
-      console.log('Notification job', job.id, `${progress}% complete`);
+      console.log('Notification job', j.id, `${progress}% complete`);
     });
-  job.save();
+  j.save();
 }

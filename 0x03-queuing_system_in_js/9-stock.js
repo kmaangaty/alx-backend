@@ -39,8 +39,8 @@ const getItemById = (id) => {
 };
 
 const app = express();
-const client = createClient();
-const PORT = 1245;
+const cl = createClient();
+const PRT = 1245;
 
 /**
  * Modifies the reserved stock for a given item.
@@ -48,7 +48,7 @@ const PORT = 1245;
  * @param {number} stock - The stock of the item.
  */
 const reserveStockById = async (itemId, stock) => {
-  return promisify(client.SET).bind(client)(`item.${itemId}`, stock);
+  return promisify(cl.SET).bind(cl)(`item.${itemId}`, stock);
 };
 
 /**
@@ -57,7 +57,7 @@ const reserveStockById = async (itemId, stock) => {
  * @returns {Promise<String>}
  */
 const getCurrentReservedStockById = async (itemId) => {
-  return promisify(client.GET).bind(client)(`item.${itemId}`);
+  return promisify(cl.GET).bind(cl)(`item.${itemId}`);
 };
 
 app.get('/list_products', (_, res) => {
@@ -81,23 +81,23 @@ app.get('/list_products/:itemId(\\d+)', (req, res) => {
 });
 
 app.get('/reserve_product/:itemId', (req, res) => {
-  const itemId = Number.parseInt(req.params.itemId);
-  const productItem = getItemById(Number.parseInt(itemId));
+  const iid = Number.parseInt(req.params.itemId);
+  const pit = getItemById(Number.parseInt(iid));
 
-  if (!productItem) {
+  if (!pit) {
     res.json({ status: 'Product not found' });
     return;
   }
-  getCurrentReservedStockById(itemId)
+  getCurrentReservedStockById(iid)
     .then((result) => Number.parseInt(result || 0))
     .then((reservedStock) => {
-      if (reservedStock >= productItem.initialAvailableQuantity) {
-        res.json({ status: 'Not enough stock available', itemId });
+      if (reservedStock >= pit.initialAvailableQuantity) {
+        res.json({ status: 'Not enough stock available', itemId: iid });
         return;
       }
-      reserveStockById(itemId, reservedStock + 1)
+      reserveStockById(iid, reservedStock + 1)
         .then(() => {
-          res.json({ status: 'Reservation confirmed', itemId });
+          res.json({ status: 'Reservation confirmed', itemId: iid });
         });
     });
 });
@@ -105,15 +105,15 @@ app.get('/reserve_product/:itemId', (req, res) => {
 const resetProductsStock = () => {
   return Promise.all(
     listProducts.map(
-      item => promisify(client.SET).bind(client)(`item.${item.itemId}`, 0),
+      item => promisify(cl.SET).bind(cl)(`item.${item.itemId}`, 0),
     )
   );
 };
 
-app.listen(PORT, () => {
+app.listen(PRT, () => {
   resetProductsStock()
     .then(() => {
-      console.log(`API available on localhost port ${PORT}`);
+      console.log(`API available on localhost port ${PRT}`);
     });
 });
 

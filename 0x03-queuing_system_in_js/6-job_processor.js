@@ -1,7 +1,7 @@
 #!/usr/bin/yarn dev
 import { createQueue } from 'kue';
 
-const queue = createQueue();
+const q = createQueue();
 
 const sendNotification = (phoneNumber, message) => {
   console.log(
@@ -11,7 +11,7 @@ const sendNotification = (phoneNumber, message) => {
   );
 };
 
-queue.process('push_notification_code', (job, done) => {
+q.process('push_notification_code', (job, done) => {
   sendNotification(job.data.phoneNumber, job.data.message);
   done();
 });

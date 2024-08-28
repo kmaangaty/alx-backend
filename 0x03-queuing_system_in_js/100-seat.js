@@ -5,18 +5,18 @@ import { createQueue } from 'kue';
 import { createClient } from 'redis';
 
 const app = express();
-const client = createClient({ name: 'reserve_seat' });
-const queue = createQueue();
-const INITIAL_SEATS_COUNT = 50;
-let reservationEnabled = false;
-const PORT = 1245;
+const cl = createClient({ name: 'reserve_seat' });
+const q = createQueue();
+const ISC = 50;
+let RES = false;
+const PT = 1245;
 
 const reserveSeat = async (number) => {
-  return promisify(client.SET).bind(client)('available_seats', number);
+  return promisify(cl.SET).bind(cl)('available_seats', number);
 };
 
 const getCurrentAvailableSeats = async () => {
-  return promisify(client.GET).bind(client)('available_seats');
+  return promisify(cl.GET).bind(cl)('available_seats');
 };
 
 app.get('/available_seats', (_, res) => {
@@ -28,12 +28,12 @@ app.get('/available_seats', (_, res) => {
 });
 
 app.get('/reserve_seat', (_req, res) => {
-  if (!reservationEnabled) {
+  if (!RES) {
     res.json({ status: 'Reservation are blocked' });
     return;
   }
   try {
-    const job = queue.create('reserve_seat');
+    const job = q.create('reserve_seat');
 
     job.on('failed', (err) => {
       console.log(
@@ -59,11 +59,11 @@ app.get('/reserve_seat', (_req, res) => {
 
 app.get('/process', (_req, res) => {
   res.json({ status: 'Queue processing' });
-  queue.process('reserve_seat', (_job, done) => {
+  q.process('reserve_seat', (_job, done) => {
     getCurrentAvailableSeats()
       .then((result) => Number.parseInt(result || 0))
       .then((availableSeats) => {
-        reservationEnabled = availableSeats <= 1 ? false : reservationEnabled;
+        RES = availableSeats <= 1 ? false : RES;
         if (availableSeats >= 1) {
           reserveSeat(availableSeats - 1)
             .then(() => done());
@@ -75,15 +75,15 @@ app.get('/process', (_req, res) => {
 });
 
 const resetAvailableSeats = async (initialSeatsCount) => {
-  return promisify(client.SET)
-    .bind(client)('available_seats', Number.parseInt(initialSeatsCount));
+  return promisify(cl.SET)
+    .bind(cl)('available_seats', Number.parseInt(initialSeatsCount));
 };
 
-app.listen(PORT, () => {
-  resetAvailableSeats(process.env.INITIAL_SEATS_COUNT || INITIAL_SEATS_COUNT)
+app.listen(PT, () => {
+  resetAvailableSeats(process.env.INITIAL_SEATS_COUNT || ISC)
     .then(() => {
-      reservationEnabled = true;
-      console.log(`API available on localhost port ${PORT}`);
+      RES = true;
+      console.log(`API available on localhost port ${PT}`);
     });
 });
 
