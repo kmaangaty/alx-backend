@@ -1,18 +1,18 @@
 #!/usr/bin/yarn dev
 import { createClient, print } from 'redis';
 
-const client = createClient();
+const cl = createClient();
 
-client.on('error', (err) => {
+cl.on('error', (err) => {
   console.log('Redis client not connected to the server:', err.toString());
 });
 
 const updateHash = (hashName, fieldName, fieldValue) => {
-  client.HSET(hashName, fieldName, fieldValue, print);
+  cl.HSET(hashName, fieldName, fieldValue, print);
 };
 
 const printHash = (hashName) => {
-  client.HGETALL(hashName, (_err, reply) => console.log(reply));
+  cl.HGETALL(hashName, (_err, reply) => console.log(reply));
 };
 
 function main() {
@@ -30,7 +30,7 @@ function main() {
   printHash('HolbertonSchools');
 }
 
-client.on('connect', () => {
+cl.on('connect', () => {
   console.log('Redis client connected to the server');
   main();
 });
